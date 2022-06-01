@@ -1,6 +1,7 @@
 from Board import Board
 from Direction import Direction
 from Field import Field
+import random
 
 
 class Organism:
@@ -46,11 +47,11 @@ class Organism:
         return self.initiative
 
     def move_to(self, pos):
-        print(self.get_name(), "goes to", pos)
         self.field.set_organism(None)
         self.board.at(pos).set_organism(self)
 
     def try_to_move_to(self, pos):
+        print(self.get_name(), self.pos,  "goes to", pos)
         if not self.board.at(pos).is_empty():
             if self.board.at(pos).get_organism().collision(self):
                 self.move_to(pos)
@@ -58,7 +59,7 @@ class Organism:
             self.move_to(pos)
 
     def kill(self):
-        print(self.get_name(), "dies")
+        print(self.get_name(), self.pos,  "dies")
         self.alive = False
         self.field.set_organism(None)
         self.world.remove_organism(self)
@@ -77,6 +78,7 @@ class Organism:
                 child = self.__class__()
                 self.world.add_organism(child)
                 self.board.at(pos).set_organism(child)
+                print("new", child.get_name(), "born at", child.get_pos())
                 break
             direction.next()
         self.breed_cooldown = self.MAX_BREED_COOLDOWN
@@ -84,9 +86,9 @@ class Organism:
     # return True allows attacker to go on self's pos
     def collision(self, attacker) -> bool:
         if self.get_name() == attacker.get_name():
-            print(attacker.get_name(), "meets with", self.get_name())
+            print(attacker.get_name(), attacker.get_pos(), "meets with", self.get_name(), self.get_pos())
             if self.is_able_to_breed() and attacker.is_able_to_breed():
-                print(attacker.get_name(), "breeds with", self.get_name())
+                print(attacker.get_name(), attacker.get_pos(), "breeds with", self.get_name(), self.get_pos())
                 self.breed()
             else:
                 if not self.is_able_to_breed():
@@ -95,7 +97,7 @@ class Organism:
                     print(attacker.get_name(), attacker.get_pos(), "is not able to breed")
             return False
         else:
-            print(attacker.get_name(), "attacks", self.get_name())
+            print(attacker.get_name(), attacker.get_pos(), "attacks", self.get_name(), self.get_pos())
             if self.get_strength() < attacker.get_strength():
                 self.kill()
                 return True
@@ -118,7 +120,10 @@ class Organism:
                 self.try_to_move_to(pos)
                 break
             direction.next()
-        self.breed_cooldown_down()
+
 
     def get_pos(self):
         return self.field.gridPos
+
+    def delta_strength(self, delta: int):
+        self.strength += delta

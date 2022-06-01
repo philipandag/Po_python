@@ -8,7 +8,7 @@ from Board import Board
 
 
 class World:
-    def __init__(self):
+    def __init__(self, game):
         self.organisms = []
         self.to_add = []
         self.board: Board = None
@@ -16,6 +16,8 @@ class World:
         self.console = None
         self.turn_counter = 0;
         self.direction_class = DirectionSquare
+        self.game = game
+        self.organism_listeners = []
 
     def set_board(self, board):
         self.board = board
@@ -33,6 +35,7 @@ class World:
             if self.organisms[i].get_initiative() < organism.get_initiative():
                 self.organisms.insert(i, organism)
                 added = True
+                break
         if not added:  # didnt found any organism slower than organism
             self.organisms.append(organism)
 
@@ -43,6 +46,8 @@ class World:
 
     def remove_organism(self, organism):
         self.organisms.remove(organism)
+        if organism in self.game.listeners:
+            self.game.listeners.remove(organism)
 
     def set_organism(self, organism, pos):
         field = self.board.at(pos)
@@ -50,7 +55,7 @@ class World:
             print("Placed", organism.get_name(), "on", pos)
             self.add_organism(organism)
         else:
-            print("Deleted", self.board.at(pos).get_organism().get_name())
+            print("Deleted", self.board.at(pos).get_organism().get_name(), "on", self.board.at(pos).get_organism().get_pos())
             self.remove_organism(field.organism)
 
         field.set_organism(organism)
@@ -63,13 +68,20 @@ class World:
 
 
     def next_turn(self):
-        print("Turn:", self.turn_counter)
+        print("Turn:", self.turn_counter, len(self.organisms))
         #self.add_organisms()
         for organism in self.organisms:
             if organism.is_alive():
                 organism.action()
+            else:
+                self.remove_organism(organism)
         self.turn_counter += 1
 
     def get_to_add_list(self):
         return self.to_add
 
+    def add_listener(self, listener):
+        self.organism_listeners.append(listener)
+
+    def remove_listener(self, listener):
+        self.organism_listeners.remove(listener)

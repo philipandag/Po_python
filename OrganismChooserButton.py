@@ -7,7 +7,7 @@ class OrganismChooserButton(Button):
         super(OrganismChooserButton, self).__init__(size, position)
         organism = organism_class()
         self.organism_class = organism_class
-        self.color = organism.get_colour()
+        self.set_color(organism.get_colour())
         self.setText(organism.get_name())
         self.world = None
 
@@ -16,3 +16,4 @@ class OrganismChooserButton(Button):
 
     def onClick(self):
         self.world.set_choosen_organism(self.organism_class)
+

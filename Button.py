@@ -9,7 +9,7 @@ class Button(InterfaceElement):
         self.needs_redraw = True
         self.size: (int, int) = size
         self.pos: (int, int) = pos
-        self.color = (200, 200, 200)
+        self.color = (240, 240, 240)
         self.fontColor = (0, 0, 0)
         self.hover_effect = (32, 32, 32)
         self.text = text
@@ -19,20 +19,41 @@ class Button(InterfaceElement):
             self.fontRender = self.renderText()
         else:
             self.fontRender = pygame.Surface((0, 0))
-        self.image = pygame.Surface(size)
+        self.image_normal = pygame.Surface(size)
+        self.image_normal.fill(self.color)
+        self.image_hover = pygame.Surface(size)
+        self.image_hover.fill(self.color)
+        self.image_hover.fill(self.hover_effect, special_flags=pygame.BLEND_RGB_ADD)
+        self.image = self.image_normal
         self.rect = self.image.get_rect(topleft=pos)
         self.hovered = False
         self.hover_effect_on = False
 
     def update(self):
-        self.image.fill(self.color)
-        if self.hovered and not self.hover_effect_on:
-            self.image.fill(self.hover_effect, special_flags=pygame.BLEND_RGB_ADD)
-            self.hover_effect_on = True
-        elif not self.hovered:
-            if self.hover_effect_on:
-                self.hover_effect_on = False
-                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        if self.hovered:
+            self.image = self.image_hover
+        elif self.image == self.image_hover:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+            self.image = self.image_normal
+        else:
+            self.image = self.image_normal
+
+
+    def setHoverEffect(self, flag):
+        self.hovered = flag
+        self.needs_redraw = True
+
+    def onMouseOver(self):
+        if not self.hovered:
+            self.needs_redraw = True
+        self.hovered = True
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+
+    def onMouseLeave(self):
+        self.needs_redraw = True
+        self.hovered = False
+
 
     def draw(self, surface):
         if self.needs_redraw:
@@ -44,14 +65,10 @@ class Button(InterfaceElement):
     def handle_event(self, event):
         if event.type == pygame.MOUSEMOTION:
             if self.rect.collidepoint(event.pos):
-                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-                if not self.hovered:
-                    self.needs_redraw = True
-                self.hovered = True
-            else:
-                if self.hovered:
-                    self.needs_redraw = True
-                self.hovered = False
+                self.onMouseOver()
+            elif self.hovered:
+                self.onMouseLeave()
+
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
                 self.onClick()
@@ -95,4 +112,10 @@ class Button(InterfaceElement):
             else:
                 upper = max_size
                 max_size = (lower + upper) // 2
+
+    def set_color(self, color):
+        self.color = color
+        self.image_normal.fill(color)
+        self.image_hover.fill(color)
+        self.image_hover.fill(self.hover_effect, special_flags=pygame.BLEND_RGB_ADD)
 

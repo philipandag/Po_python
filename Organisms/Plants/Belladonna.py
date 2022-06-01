@@ -8,3 +8,7 @@ class Belladonna(Plant):
     STRENGTH = 1
     def __init__(self):
         super(Belladonna, self).__init__(Belladonna.NAME, Belladonna.SYMBOL, Belladonna.COLOR, Belladonna.STRENGTH)
+
+    def collision(self, attacker) -> bool:
+        super(Belladonna, self).collision(attacker)
+        attacker.kill()

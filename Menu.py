@@ -13,5 +13,5 @@ class Menu(GridContainer):
     def createButtons(self):
         self.grid = [[]]
         self.grid[0].append(NextTurnButton(self.fieldSize, (self.fieldSize[0] * 0, 0), self.window))
-        self.grid[0].append(Button(self.fieldSize, (self.fieldSize[0] * 1, 0), "Save"))
-        self.grid[0].append(Button(self.fieldSize, (self.fieldSize[0] * 2, 0), "Load"))
+        self.grid[0].append(SaveButton(self.fieldSize, (self.fieldSize[0] * 1, 0), "Save"))
+        self.grid[0].append(LoadButton(self.fieldSize, (self.fieldSize[0] * 2, 0), "Load"))

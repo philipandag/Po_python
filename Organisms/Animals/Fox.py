@@ -19,7 +19,7 @@ class Fox(Animal):
             delta = direction.delta()
             pos = (self.pos[0] + delta[0], self.pos[1] + delta[1])
             if self.board.onBoard(pos):
-                if self.board.at(pos).get_organism() is not None:
+                if not self.board.at(pos).is_empty():
                     if self.board.at(pos).get_organism().get_strength() <= self.get_strength():
                         self.try_to_move_to(pos)
                         break

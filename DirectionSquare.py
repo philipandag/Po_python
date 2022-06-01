@@ -1,5 +1,8 @@
 import random
 import enum
+
+import pygame
+
 from Direction import Direction
 
 
@@ -41,3 +44,13 @@ class DirectionSquare(Direction):
 
     def directions(self) -> int:
         return self.DIRECTIONS
+
+    def key_to_dir(self, key):
+        if key == pygame.K_DOWN:
+            self.value = self.S
+        elif key == pygame.K_RIGHT:
+            self.value = self.E
+        elif key == pygame.K_UP:
+            self.value = self.N
+        elif key == pygame.K_LEFT:
+            self.value = self.W

@@ -21,3 +21,6 @@ class Direction(ABC):
 
     def directions(self) -> int:
         pass
+
+    def key_to_dir(self, key):
+        pass

@@ -19,13 +19,13 @@ class Field(Button):
     def set_organism(self, organism):
         self.organism = organism
         if organism is not None:
-            organism.set_world(self.world)
             organism.set_field(self)
             self.text = organism.get_symbol()
             self.color = organism.get_colour()
         else:
             self.color = self.empty_color
             self.text = ""
+
         self.needs_redraw = True
         self.fontRender = self.renderText()
 
@@ -48,8 +48,9 @@ class Field(Button):
 
     def onClick(self):
         if self.is_empty():
-            organism = self.world.get_choosen_organism()
-            self.world.set_organism(organism(), self.gridPos)
+            organism = self.world.get_choosen_organism()()
+            self.world.set_organism(organism, self.gridPos)
+            organism.set_world(self.world)
         else:
             self.world.set_organism(None, self.gridPos)
         self.needs_redraw = True
