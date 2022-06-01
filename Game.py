@@ -11,7 +11,9 @@ WHITE = (255, 255, 255)
 PADDING = 25
 
 
+
 class Game:
+    HANDLED_EVENTS = [pygame.KEYUP, pygame.KEYDOWN, pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
     MENU_HEIGHT = 50
     CHOOSER_HEIGHT = 100
 
@@ -44,19 +46,29 @@ class Game:
                                                self.organismChooserSize)
         self.components.append(self.organismChooser)
 
+        self.space_pressed = False
+        self.screen.fill(WHITE)
+
     def quit(self):
         pygame.quit()
 
     def handle_event(self, event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            self.space_pressed = True
+        elif event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
+            self.space_pressed = False
+
         for comp in self.components:
             comp.handle_event(event)
 
     def update(self):
+        if self.space_pressed:
+            self.world.next_turn()
         for comp in self.components:
             comp.update()
 
     def draw(self, surface: pygame.Surface):
-        surface.fill(WHITE)
+        #surface.fill(WHITE)
         for comp in self.components:
             comp.draw(surface)
 
@@ -71,10 +83,11 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
-                elif event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEMOTION:
+                elif event.type in Game.HANDLED_EVENTS:
                     self.handle_event(event)
+
             self.update()
-            self.screen.fill(BLACK)
+            #self.screen.fill(BLACK)
             self.draw(self.screen)
             pygame.display.update()
             self.clock.tick(25)

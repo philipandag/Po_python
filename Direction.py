@@ -1,12 +1,14 @@
+import enum
 from abc import ABCMeta
+from abc import ABC
 
 from enum import EnumMeta
+from enum import Enum
 
+#class DirectionMeta(ABCMeta, EnumMeta):
+ #   pass
 
-class Direction(ABCMeta, EnumMeta):
-
-    def __init__(self):
-        self.value: Direction = Direction.N
+class Direction(ABC):
 
     def randomise(self) -> None:
         pass

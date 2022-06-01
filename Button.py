@@ -6,6 +6,7 @@ class Button(InterfaceElement):
     default_font = "consolas"
 
     def __init__(self, size: (int, int), pos: (int, int), text: str = ""):
+        self.needs_redraw = True
         self.size: (int, int) = size
         self.pos: (int, int) = pos
         self.color = (200, 200, 200)
@@ -34,16 +35,22 @@ class Button(InterfaceElement):
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
     def draw(self, surface):
-        pygame.draw.rect(surface, (0, 0, 0), (self.pos[0] - 1, self.pos[1] - 1, self.image.get_width() + 2, self.image.get_height() + 2), 1)
-        surface.blit(self.image, self.rect)
-        surface.blit(self.fontRender, self.rect)
+        if self.needs_redraw:
+            surface.blit(self.image, (self.pos[0] + 1, self.pos[1] + 1, self.image.get_width() - 1, self.image.get_height() - 1))
+            pygame.draw.rect(surface, (0, 0, 0), (self.pos[0], self.pos[1], self.image.get_width() + 1, self.image.get_height() + 1), 1)
+            surface.blit(self.fontRender, self.rect)
+            self.needs_redraw = False
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEMOTION:
             if self.rect.collidepoint(event.pos):
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                if not self.hovered:
+                    self.needs_redraw = True
                 self.hovered = True
             else:
+                if self.hovered:
+                    self.needs_redraw = True
                 self.hovered = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
@@ -54,20 +61,24 @@ class Button(InterfaceElement):
 
     def moveTo(self, pos):
         self.pos = pos
+        self.needs_redraw = True
         return self
 
     def resize(self, size: (int, int)):
         self.size = size
         self.fontRender = self.renderText()
+        self.needs_redraw = True
         return self
 
     def setText(self, text: str):
         self.text = text
         self.fontRender = self.renderText()
+        self.needs_redraw = True
 
     def resizeFont(self, size):
         self.font = pygame.font.SysFont(self.default_font, size)
         self.fontRender = self.renderText()
+        self.needs_redraw = True
 
     def renderText(self):
         max_size = 20

@@ -1,5 +1,5 @@
 import random
-
+import enum
 from Direction import Direction
 
 
@@ -13,11 +13,13 @@ class DirectionSquare(Direction):
     W = 6
     NW = 7
     DIRECTIONS = 8
+    directions_list = [N, NE, E, SE, S, SW, W, NW]
+
     def __init__(self):
-        super(DirectionSquare, self).__init__()
+        self.value = DirectionSquare.N
 
     def randomise(self):
-        self.value = random(list(DirectionSquare))
+        self.value = random.choice(self.directions_list)
 
     def next(self):
         if self.value == DirectionSquare.NW:
@@ -29,7 +31,7 @@ class DirectionSquare(Direction):
         dx, dy = 0, 0
         if DirectionSquare.N < self.value < DirectionSquare.S:
             dx = 1
-        elif DirectionSquare.S < self.value <= DirectionSquare.NE:
+        elif DirectionSquare.S < self.value <= DirectionSquare.NW:
             dx = -1
         if self.value > DirectionSquare.W or self.value < DirectionSquare.E:
             dy = -1

@@ -12,6 +12,7 @@ class Board(GridContainer):
         super(Board, self).__init__(pos, size, dimensions)
         self.world = world
         self.createGrid()
+        self.mouse_down_pos = None
 
     def createGrid(self):
         for row in range(self.dimensions[0]):
@@ -35,3 +36,9 @@ class Board(GridContainer):
 
     def at(self, pos: (int, int)) -> 'Field':
         return self.grid[pos[0]][pos[1]]
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.mouse_down_pos = event.pos
+        elif event.type == pygame.MOUSEMOTION:
+            for x =

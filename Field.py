@@ -5,11 +5,9 @@ import pygame
 
 class Field(Button):
 
-    hover_effect = (32, 32, 32)
-    empty_color = (220, 220, 220)
-
     def __init__(self, size: (int, int), pos: (int, int), gridPos, world):
         super(Field, self).__init__(size, pos, "")
+        self.empty_color = self.color
         self.organism = None
         self.world = world
         self.gridPos = gridPos
@@ -26,8 +24,9 @@ class Field(Button):
             self.text = organism.get_symbol()
             self.color = organism.get_colour()
         else:
-            self.color = Field.empty_color
+            self.color = self.empty_color
             self.text = ""
+        self.needs_redraw = True
         self.fontRender = self.renderText()
 
     def update(self):
@@ -36,7 +35,7 @@ class Field(Button):
             self.clicked = False
 
         if self.hovered and not self.hover_effect_on:
-            self.image.fill(Field.hover_effect, special_flags=pygame.BLEND_RGB_ADD)
+            self.image.fill(self.hover_effect, special_flags=pygame.BLEND_RGB_ADD)
             self.hover_effect_on = True
         elif not self.hovered:
             self.image.fill(self.color)
@@ -53,4 +52,5 @@ class Field(Button):
             self.world.set_organism(organism(), self.gridPos)
         else:
             self.world.set_organism(None, self.gridPos)
+        self.needs_redraw = True
         self.clicked = True
