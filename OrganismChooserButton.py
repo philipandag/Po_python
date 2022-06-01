@@ -8,7 +8,7 @@ class OrganismChooserButton(Button):
         organism = organism_class()
         self.organism_class = organism_class
         self.color = organism.get_colour()
-        self.setText(organism.get_symbol())
+        self.setText(organism.get_name())
         self.world = None
 
     def set_world(self, world):

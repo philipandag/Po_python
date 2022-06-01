@@ -1,8 +1,10 @@
+import pygame
+
 from InterfaceElement import InterfaceElement
 
 
 class GridContainer(InterfaceElement):
-
+    default_font = 'consolas'
     def __init__(self, pos: (int, int), size: (int, int), dimensions: (int, int)):
         self.pos = pos
         self.fieldSize = (size[0] // dimensions[0], size[1] // dimensions[1])
@@ -39,3 +41,4 @@ class GridContainer(InterfaceElement):
     def set_element(self, element, pos: (int, int)):
         if self.in_bounds(pos):
             self.grid[pos[0]][pos[1]] = element
+

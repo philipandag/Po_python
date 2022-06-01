@@ -32,14 +32,13 @@ class Game:
         self.organismChooserPos = (0, self.screen.get_height() - self.CHOOSER_HEIGHT)
 
         self.boardPos = (PADDING, self.menuSize[1] + PADDING)
-        board_smallest_dimension = min(self.screen.get_width() - 2 * PADDING,
-                                       self.screen.get_height() - 2 * PADDING - self.menuSize[1] -
-                                       self.organismChooserSize[
-                                           1])
+        board_smallest_dimension = min(self.screen.get_width() - PADDING,
+                                       self.screen.get_height() - self.menuSize[1] - PADDING -
+                                       self.organismChooserSize[1])
         self.boardSize = (board_smallest_dimension, board_smallest_dimension)
 
         self.components.append(self.board)
-        self.menu = Menu(self.menuPos, self.menuSize)
+        self.menu = Menu(self.menuPos, self.menuSize, self)
         self.components.append(self.menu)
         self.organismChooser = OrganismChooser(self.organismChooserPos,
                                                self.organismChooserSize)
@@ -92,3 +91,6 @@ class Game:
         self.components.append(self.board)
         self.world.set_board(self.board)
         self.organismChooser.setWorld(self.world)
+
+    def get_world(self):
+        return self.world

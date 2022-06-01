@@ -1,9 +1,17 @@
 from typing import Type
 
+import pygame.draw
+
 from OrganismChooserButton import OrganismChooserButton
 
 from GridContainer import GridContainer
+from Organisms.Animals.Antelope import Antelope
+from Organisms.Animals.CyberSheep import CyberSheep
+from Organisms.Animals.Fox import Fox
 from Organisms.Animals.Human import Human
+from Organisms.Animals.Sheep import Sheep
+from Organisms.Animals.Tortoise import Tortoise
+from Organisms.Animals.Wolf import Wolf
 from Organisms.Plants.Belladonna import Belladonna
 from Organisms.Plants.Dandelion import Dandelion
 from Organisms.Plants.Grass import Grass
@@ -14,7 +22,7 @@ from Organisms.Plants.PineBorscht import PineBorscht
 
 class OrganismChooser(GridContainer):
 
-    animals: Type[Organism] = [Human]
+    animals: Type[Organism] = [Human, CyberSheep, Fox, Antelope, Tortoise, Wolf, Sheep]
     plants: Type[Organism] = [Grass, Dandelion, Guarana, Belladonna, PineBorscht]
 
     def __init__(self, pos: (int, int), size: (int, int)):

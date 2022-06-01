@@ -1,8 +1,10 @@
 import pygame
+
+from Button import Button
 from Field import Field
 from GridContainer import GridContainer
 from InterfaceElement import InterfaceElement
-
+from Button import Button
 
 class Board(GridContainer):
 
@@ -27,3 +29,9 @@ class Board(GridContainer):
 
     def getGrid(self):
         return self.grid
+
+    def onBoard(self, pos: (int, int)):
+        return 0 <= pos[0] < self.dimensions[0] and 0 <= pos[1] < self.dimensions[1]
+
+    def at(self, pos: (int, int)) -> 'Field':
+        return self.grid[pos[0]][pos[1]]

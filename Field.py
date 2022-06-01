@@ -9,8 +9,7 @@ class Field(Button):
     empty_color = (220, 220, 220)
 
     def __init__(self, size: (int, int), pos: (int, int), gridPos, world):
-        super(Field, self).__init__(size, pos)
-        self.color = (random.random() * 250, random.random() * 250, random.random() * 250)
+        super(Field, self).__init__(size, pos, "")
         self.organism = None
         self.world = world
         self.gridPos = gridPos
@@ -24,15 +23,14 @@ class Field(Button):
         if organism is not None:
             organism.set_world(self.world)
             organism.set_field(self)
-
-    def update(self):
-        if self.organism is None:
+            self.text = organism.get_symbol()
+            self.color = organism.get_colour()
+        else:
             self.color = Field.empty_color
             self.text = ""
-        else:
-            self.color = self.organism.get_colour()
-            self.text = self.organism.symbol
+        self.fontRender = self.renderText()
 
+    def update(self):
         if self.clicked:
             self.image.fill(self.color)
             self.clicked = False
