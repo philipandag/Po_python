@@ -15,5 +15,5 @@ class OrganismChooserButton(Button):
         self.world = world
 
     def onClick(self):
-        self.world.set_choosen_organism(self.organism_class)
+        self.world.set_chosen_organism(self.organism_class)
 

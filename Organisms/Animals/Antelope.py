@@ -14,13 +14,13 @@ class Antelope(Animal):
         super(Antelope, self).__init__(Antelope.NAME, Antelope.SYMBOL, Antelope.COLOR, Antelope.STRENGTH, Antelope.INITIATIVE)
 
     def action(self):
-        direction = self.world.direction_class()
+        direction = self.world.get_direction()()
         direction.randomise()
 
         for i in range(direction.directions()):
             delta = direction.delta()
             pos = (self.pos[0] + delta[0]*2, self.pos[1] + delta[1]*2)
-            if self.board.onBoard(pos):
+            if self.get_board().onBoard(pos):
                 self.try_to_move_to(pos)
                 break
             direction.next()
@@ -28,16 +28,17 @@ class Antelope(Animal):
 
     def collision(self, attacker) -> bool:
         if random.random() < self.ESCAPE_CHANCE:
-            direction = self.world.direction_class()
+            direction = self.world.get_direction()()
             direction.randomise()
 
             for i in range(direction.directions()):
                 delta = direction.delta()
                 pos = (self.pos[0] + delta[0] * 2, self.pos[1] + delta[1] * 2)
-                if self.board.onBoard(pos):
+                if self.get_board().onBoard(pos):
                     self.try_to_move_to(pos)
                     break
                 direction.next()
             print("Antylopa", self.pos, "ucieka od", attacker.get_name(), attacker.get_pos())
+            return True
         else:
-            super(Antelope, self).collision()
+            return super(Antelope, self).collision(attacker)

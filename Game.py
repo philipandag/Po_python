@@ -1,6 +1,7 @@
 import pygame
 import sys
 from Board import Board
+from HexBoard import HexBoard
 from InterfaceElement import InterfaceElement
 from Menu import Menu
 from World import World
@@ -13,12 +14,11 @@ WHITE = (255, 255, 255)
 PADDING = 25
 
 
-
 class Game:
     HANDLED_EVENTS = [pygame.KEYUP, pygame.KEYDOWN, pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
     MENU_HEIGHT = 50
     CHOOSER_HEIGHT = 100
-    SAVE_FILE ="save_file.save"
+    SAVE_FILE = "save_file.save"
 
     def __init__(self, size: (int, int)):
         self.screen = pygame.display.set_mode((size[0], size[1]))
@@ -37,10 +37,9 @@ class Game:
         self.organismChooserPos = (0, self.screen.get_height() - self.CHOOSER_HEIGHT)
 
         self.boardPos = (PADDING, self.menuSize[1] + PADDING)
-        board_smallest_dimension = min(self.screen.get_width() - PADDING,
-                                       self.screen.get_height() - self.menuSize[1] - 2*PADDING -
+
+        self.boardSize = (self.screen.get_width() - 2*PADDING, self.screen.get_height() - self.menuSize[1] - 2 * PADDING -
                                        self.organismChooserSize[1])
-        self.boardSize = (board_smallest_dimension, board_smallest_dimension)
 
         self.menu = Menu(self.menuPos, self.menuSize, self)
         self.components.append(self.menu)
@@ -74,7 +73,7 @@ class Game:
             comp.update()
 
     def draw(self, surface: pygame.Surface):
-        #surface.fill(WHITE)
+        # surface.fill(WHITE)
         for comp in self.components:
             comp.draw(surface)
 
@@ -93,7 +92,7 @@ class Game:
                     self.handle_event(event)
 
             self.update()
-            #self.screen.fill(BLACK)
+            # self.screen.fill(BLACK)
             self.draw(self.screen)
             pygame.display.update()
             self.clock.tick(25)
@@ -101,21 +100,33 @@ class Game:
         self.quit()
 
     def create_world(self, dimensions: (int, int)):
-        self.world = World(self)
-        self.board = Board((PADDING, self.menu.size[1] + PADDING),
-                           self.boardSize,
-                           dimensions, self.world)
+        self.world = World(self, dimensions)
+        self.board = self.create_board()
         self.components.append(self.board)
-        self.world.set_board(self.board)
         self.organismChooser.setWorld(self.world)
+
+    def create_board(self):
+        return HexBoard(self.boardPos, self.boardSize, self.world)
 
     def get_world(self):
         return self.world
 
     def save_world(self):
-        file = open(self.SAVE_FILE, "w")
-        pickle.Pickler(file, self.world)
+        with open(self.SAVE_FILE, "wb") as file:
+            pickle.dump(self.world, file)
 
     def load_world(self):
-        file = open(self.SAVE_FILE, "r")
-        world = pickle.load(file)
+        with open(self.SAVE_FILE, "rb") as file:
+            world = pickle.load(file)
+        self.components.remove(self.board)
+        self.world = world
+        self.board = self.create_board()
+        self.components.append(self.board)
+        self.organismChooser.setWorld(self.world)
+        self.world.game = self
+        self.emplace_organisms()
+        self.board.redraw(self.screen)
+
+    def emplace_organisms(self):
+        for organism in self.world.organisms:
+            self.board.at(organism.pos).set_organism(organism)

@@ -22,14 +22,13 @@ class Human(Animal):
         if self.world is not None:
             self.world.remove_listener(self)
         self.world = world
-        self.board = world.get_board()
         self.world.add_listener(self)
-        self.direction = self.world.direction_class()
+        self.direction = self.world.get_direction()()
 
     def action(self):
         delta = self.direction.delta()
         pos = (self.pos[0] + delta[0], self.pos[1] + delta[1])
-        if self.board.onBoard(pos):
+        if self.get_board().onBoard(pos):
             self.try_to_move_to(pos)
         self.special_ability_tick()
 

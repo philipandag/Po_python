@@ -3,14 +3,14 @@ import pygame
 from InterfaceElement import InterfaceElement
 
 
-class GridContainer(InterfaceElement):
+class HexGridContainer(InterfaceElement):
     default_font = 'consolas'
     def __init__(self, pos: (int, int), size: (int, int), dimensions: (int, int)):
         self.pos = pos
-        self.dimensions = dimensions
         self.size = size
-        self.fieldSize = (size[0] // dimensions[0], size[1] // dimensions[1])
-        self.grid = [[None for i in range(dimensions[1])] for j in range(dimensions[0])]
+        self.fieldSize = self.size[0] // (self.dimensions[0] + self.dimensions[1]//2), self.size[1] // self.dimensions[1]
+        self.dimensions = dimensions
+        self.grid = [[None for i in range(dimensions[0])] for j in range(dimensions[1])]
 
     def draw(self, surface):
         for row in self.grid:
@@ -40,5 +40,5 @@ class GridContainer(InterfaceElement):
 
     def set_element(self, element, pos: (int, int)):
         if self.in_bounds(pos):
-            self.grid[pos[1]][pos[0]] = element
+            self.grid[pos[0]][pos[1]] = element
 

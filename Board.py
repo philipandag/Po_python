@@ -1,6 +1,7 @@
 import pygame
 
 from Button import Button
+from DirectionSquare import DirectionSquare
 from Field import Field
 from GridContainer import GridContainer
 from InterfaceElement import InterfaceElement
@@ -8,19 +9,23 @@ from Button import Button
 
 class Board(GridContainer):
 
-    def __init__(self, pos: (int, int), size: (int, int), dimensions: (int, int), world):
-        super(Board, self).__init__(pos, size, dimensions)
+    def __init__(self, pos: (int, int), size: (int, int), world):
+        m = min(size[0]//world.dimensions[0], size[1]//world.dimensions[1])
+        size = (m*world.dimensions[0], m*world.dimensions[1])
+        super(Board, self).__init__(pos, size, world.dimensions)
         self.world = world
+        self.dimensions = world.dimensions
         self.createGrid()
         self.mouse_down_pos = None
+        self.direction_class = DirectionSquare
 
     def createGrid(self):
-        for row in range(self.dimensions[0]):
-            for column in range(self.dimensions[1]):
-                field_pos = (self.pos[0] + self.fieldSize[0] * row,
-                             self.pos[1] + self.fieldSize[1] * column)
+        for row in range(self.dimensions[1]):
+            for column in range(self.dimensions[0]):
+                field_pos = (self.pos[0] + self.fieldSize[0] * column,
+                             self.pos[1] + self.fieldSize[1] * row)
 
-                self.grid[row][column] = Field(self.fieldSize, field_pos, (row, column), self.world)
+                self.grid[column][row] = Field(self.fieldSize, field_pos, (column, row), self.world)
 
     def setDimensions(self, dimensions):
         self.dimensions = dimensions
@@ -55,13 +60,11 @@ class Board(GridContainer):
                 self.drag_positions_fix(f1, f2)
                 for y in range(self.dimensions[1]):
                     for x in range(self.dimensions[0]):
-                        if f1[0] <= x <= f2[0] and f1[1] <= y <= f2[1]:
+                        if y in range(f1[1], f2[1]+1) and x in range(f1[0], f2[0]+1):
                             self.at((x, y)).setHoverEffect(True)
-                            hand = True
                         else:
                             self.at((x, y)).setHoverEffect(False)
-                if hand:
-                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
             else:
                 for y in range(self.dimensions[1]):
                     for x in range(self.dimensions[0]):
@@ -93,3 +96,12 @@ class Board(GridContainer):
             f2[0], f1[0] = f1[0], f2[0]
         if f2[1] < f1[1]:
             f2[1], f1[1] = f1[1], f2[1]
+
+    def get_direction(self):
+        return self.direction_class
+
+    def redraw(self, surface):
+        for row in self.grid:
+            for field in row:
+                field.toggle_needs_redraw()
+                field.draw(surface)

@@ -2,9 +2,10 @@ from Board import Board
 from Direction import Direction
 from Field import Field
 import random
+from abc import ABC
 
 
-class Organism:
+class Organism(ABC):
     def __init__(self, name, symbol,  color, strength, initiative, breed_cooldown):
         self.name = name
         self.symbol = symbol
@@ -12,8 +13,6 @@ class Organism:
         self.strength = strength
         self.initiative = initiative
         self.world = None
-        self.board: Board = None
-        self.field: Field = None
         self.alive = False
         self.pos = None
         self.MAX_BREED_COOLDOWN = breed_cooldown
@@ -30,12 +29,10 @@ class Organism:
 
     def set_world(self, world):
         self.world = world
-        self.board = world.get_board()
 
     def set_field(self, field):
-        self.field = field
         self.alive = True
-        self.pos = self.field.gridPos
+        self.pos = field.gridPos
 
     def is_alive(self):
         return self.alive
@@ -47,13 +44,14 @@ class Organism:
         return self.initiative
 
     def move_to(self, pos):
-        self.field.set_organism(None)
-        self.board.at(pos).set_organism(self)
+        self.world.get_board().at(self.pos).set_organism(None)
+        self.world.get_board().at(pos).set_organism(self)
+        self.pos = pos
 
     def try_to_move_to(self, pos):
         print(self.get_name(), self.pos,  "goes to", pos)
-        if not self.board.at(pos).is_empty():
-            if self.board.at(pos).get_organism().collision(self):
+        if not self.get_board().at(pos).is_empty():
+            if self.get_board().at(pos).get_organism().collision(self):
                 self.move_to(pos)
         else:
             self.move_to(pos)
@@ -61,23 +59,23 @@ class Organism:
     def kill(self):
         print(self.get_name(), self.pos,  "dies")
         self.alive = False
-        self.field.set_organism(None)
+        self.get_field().set_organism(None)
         self.world.remove_organism(self)
 
     def is_able_to_breed(self):
         return self.breed_cooldown == 0
 
     def breed(self):
-        direction = self.world.direction_class()
+        direction = self.world.get_direction()()
         direction.randomise()
 
         for i in range(direction.directions()):
             delta = direction.delta()
             pos = (self.pos[0] + delta[0], self.pos[1] + delta[1])
-            if self.board.onBoard(pos) and self.board.at(pos).is_empty():
+            if self.get_board().onBoard(pos) and self.get_board().at(pos).is_empty():
                 child = self.__class__()
                 self.world.add_organism(child)
-                self.board.at(pos).set_organism(child)
+                self.get_board().at(pos).set_organism(child)
                 print("new", child.get_name(), "born at", child.get_pos())
                 break
             direction.next()
@@ -110,20 +108,27 @@ class Organism:
             self.breed_cooldown -= 1
 
     def action(self):
-        direction = self.world.direction_class()
+        direction = self.world.get_direction()()
         direction.randomise()
 
         for i in range(direction.directions()):
             delta = direction.delta()
             pos = (self.pos[0] + delta[0], self.pos[1] + delta[1])
-            if self.board.onBoard(pos):
+            if self.get_board().onBoard(pos):
                 self.try_to_move_to(pos)
                 break
             direction.next()
+        self.breed_cooldown_down()
 
 
     def get_pos(self):
-        return self.field.gridPos
+        return self.get_field().gridPos
 
     def delta_strength(self, delta: int):
         self.strength += delta
+
+    def get_board(self):
+        return self.world.get_board()
+
+    def get_field(self):
+        return self.world.get_board().at(self.pos)

@@ -7,7 +7,8 @@ from numpy import sign
 class CyberSheep(Animal):
     NAME = "CyberSheep"
     SYMBOL = "#"
-    COLOR = (29, 0, 255)
+    ATTACK_COLOR = (0, 0, 255)
+    COLOR = (150, 150, 220)
     STRENGTH = 11
     INITIATIVE = 4
     def __init__(self):
@@ -21,22 +22,24 @@ class CyberSheep(Animal):
         else:
             super(CyberSheep, self).action()
 
-
     def search_for_pine(self):
-        shortest_distance = self.board.dimensions[0] * self.board.dimensions[1]
+        shortest_distance = self.get_board().dimensions[0] * self.get_board().dimensions[1]
         closest = None
 
-        for y in range(self.board.dimensions[1]):
-            for x in range(self.board.dimensions[0]):
-                if isinstance(self.board.at((x,y)).get_organism(), PineBorscht):
+        for y in range(self.get_board().dimensions[1]):
+            for x in range(self.get_board().dimensions[0]):
+                if isinstance(self.get_board().at((x,y)).get_organism(), PineBorscht):
                     distance = abs(self.pos[0] - x) + abs(self.pos[1] - y)
                     if distance < shortest_distance:
                         shortest_distance = distance
                         closest = (x, y)
         if closest is not None:
+            self.color = self.ATTACK_COLOR
             delta = (closest[0] - self.pos[0], closest[1] - self.pos[1])
             dir = (sign(delta[0]), sign(delta[1]))
             return dir
+        self.color = self.COLOR
         return None
+
 
 

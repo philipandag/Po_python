@@ -19,15 +19,12 @@ class Button(InterfaceElement):
             self.fontRender = self.renderText()
         else:
             self.fontRender = pygame.Surface((0, 0))
-        self.image_normal = pygame.Surface(size)
-        self.image_normal.fill(self.color)
-        self.image_hover = pygame.Surface(size)
-        self.image_hover.fill(self.color)
-        self.image_hover.fill(self.hover_effect, special_flags=pygame.BLEND_RGB_ADD)
+        self.image_normal, self.image_hover = self.create_images()
         self.image = self.image_normal
         self.rect = self.image.get_rect(topleft=pos)
         self.hovered = False
         self.hover_effect_on = False
+        self.onClickFunction = None
 
     def update(self):
         if self.hovered:
@@ -37,7 +34,6 @@ class Button(InterfaceElement):
             self.image = self.image_normal
         else:
             self.image = self.image_normal
-
 
     def setHoverEffect(self, flag):
         self.hovered = flag
@@ -59,22 +55,26 @@ class Button(InterfaceElement):
         if self.needs_redraw:
             surface.blit(self.image, (self.pos[0] + 1, self.pos[1] + 1, self.image.get_width() - 1, self.image.get_height() - 1))
             pygame.draw.rect(surface, (0, 0, 0), (self.pos[0], self.pos[1], self.image.get_width() + 1, self.image.get_height() + 1), 1)
-            surface.blit(self.fontRender, self.rect)
+            surface.blit(self.fontRender, (self.pos[0] + (self.size[0] - self.fontRender.get_size()[0])//2,  self.pos[1] + (self.size[1] - self.fontRender.get_size()[1])//2))
             self.needs_redraw = False
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEMOTION:
-            if self.rect.collidepoint(event.pos):
+            if self.collides(event.pos):
                 self.onMouseOver()
             elif self.hovered:
                 self.onMouseLeave()
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
+            if self.collides(event.pos):
                 self.onClick()
 
+    def collides(self, pos):
+        return self.rect.collidepoint(pos)
+
     def onClick(self):
-        pass
+        if self.onClickFunction is not None:
+            self.onClickFunction()
 
     def moveTo(self, pos):
         self.pos = pos
@@ -99,9 +99,9 @@ class Button(InterfaceElement):
 
     def renderText(self):
         max_size = 20
-        lower, upper = 0, self.size[1]
+        lower, upper = 0, int(self.size[1])
         while True:
-            font = pygame.font.SysFont(self.default_font, max_size)
+            font = pygame.font.SysFont(self.default_font, int(max_size))
             size = font.size(self.text)
 
             if upper - lower <= 1:
@@ -118,4 +118,20 @@ class Button(InterfaceElement):
         self.image_normal.fill(color)
         self.image_hover.fill(color)
         self.image_hover.fill(self.hover_effect, special_flags=pygame.BLEND_RGB_ADD)
+
+    def setOnClick(self, function):
+        self.onClickFunction = function
+        return self
+
+    def toggle_needs_redraw(self):
+        self.needs_redraw = True
+
+    def create_images(self) -> (pygame.Surface, pygame.Surface):
+        image_normal = pygame.Surface(self.size)
+        image_normal.fill(self.color)
+        image_hover = pygame.Surface(self.size)
+        image_hover.fill(self.color)
+        image_hover.fill(self.hover_effect, special_flags=pygame.BLEND_RGB_ADD)
+
+        return image_normal, image_hover
 

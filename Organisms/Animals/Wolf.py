@@ -9,3 +9,6 @@ class Wolf(Animal):
     INITIATIVE = 5
     def __init__(self):
         super(Wolf, self).__init__(Wolf.NAME, Wolf.SYMBOL, Wolf.COLOR, Wolf.STRENGTH, Wolf.INITIATIVE)
+
+    def action(self):
+        pass

@@ -1,12 +1,13 @@
+import math
 import random
 from Button import Button
 import pygame
+from HexButton import HexButton
 
-
-class Field(Button):
+class HexField(HexButton):
 
     def __init__(self, size: (int, int), pos: (int, int), gridPos, world):
-        super(Field, self).__init__(size, pos, "")
+        super(HexField, self).__init__(size, pos, "")
         self.empty_color = self.color
         self.organism = None
         self.world = world
@@ -28,20 +29,8 @@ class Field(Button):
 
         self.needs_redraw = True
         self.fontRender = self.renderText()
+        self.image_normal, self.image_hover = self.create_images()
 
-    def update(self):
-        if self.clicked:
-            self.image.fill(self.color)
-            self.clicked = False
-
-        if self.hovered and not self.hover_effect_on:
-            self.image.fill(self.hover_effect, special_flags=pygame.BLEND_RGB_ADD)
-            self.hover_effect_on = True
-        elif not self.hovered:
-            self.image.fill(self.color)
-            if self.hover_effect_on:
-                self.hover_effect_on = False
-                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
     def is_empty(self):
         return self.organism is None
@@ -55,3 +44,20 @@ class Field(Button):
             self.world.set_organism(None, self.gridPos)
         self.needs_redraw = True
         self.clicked = True
+
+    def renderText(self):
+        max_size = 20
+        lower, upper = 0, int(self.size[1]*math.sqrt(3)/2)
+        while True:
+            font = pygame.font.SysFont(self.default_font, int(max_size))
+            size = font.size(self.text)
+
+            if upper - lower <= 1:
+                return font.render(self.text, False, self.fontColor)
+            if size[0] <= self.size[0] and size[1] <= self.size[1]:
+                lower = max_size
+                max_size = (lower + upper) // 2
+            else:
+                upper = max_size
+                max_size = (lower + upper) // 2
+
