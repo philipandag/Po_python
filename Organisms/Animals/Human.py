@@ -6,7 +6,9 @@ from Organisms.Animals.Animal import Animal
 class Human(Animal):
     NAME = "Human"
     SYMBOL = "H"
-    COLOR = (180, 20, 200)
+    ABILITY_COLOR = (255, 50, 255)
+    COOLDOWN_COLOR = (70, 50, 70)
+    COLOR = (180, 20, 180)
     STRENGTH = 5
     INITIATIVE = 4
     ABILITY_COOLDOWN = 5
@@ -56,3 +58,11 @@ class Human(Animal):
 
     def get_strength(self):
         return self.strength + self.ability_bonus_strength
+
+    def get_colour(self):
+        if self.ability_bonus_strength > 0:
+            return self.ABILITY_COLOR
+        elif self.ability_cooldown > 0:
+            return self.COOLDOWN_COLOR
+        else:
+            return self.color
