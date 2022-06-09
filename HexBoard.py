@@ -7,11 +7,10 @@ from DirectionSquare import DirectionSquare
 from HexField import HexField
 from GridContainer import GridContainer
 
-from Board import Board
+from SquareBoard import SquareBoard
 
 
-class HexBoard(Board):
-
+class HexBoard(SquareBoard):
     def __init__(self, pos: (int, int), size: (int, int), world):
         self.pos = pos
         self.fieldSize = size[0] // (world.dimensions[0] + world.dimensions[1] // 2)
@@ -25,7 +24,6 @@ class HexBoard(Board):
         self.mouse_down_pos = None
         self.size = self.size[0], self.size[1] * (self.size[0] // (self.size[0] + (self.dimensions[1]//2)))
 
-
     def createGrid(self):
         for row in range(self.dimensions[1]):
             for column in range(self.dimensions[0]):
@@ -33,7 +31,6 @@ class HexBoard(Board):
                              self.pos[1] + self.fieldSize[1]*3/4 * row)
 
                 self.grid[column][row] = HexField(self.fieldSize, field_pos, (column, row), self.world)
-
 
     def handle_event(self, event):
         if event.type not in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
@@ -117,6 +114,7 @@ class HexBoard(Board):
     def grid_to_pos_px(self, grid_pos):
         pos_y = grid_pos[1] * self.fieldSize[1]
         pos_x = (grid_pos[0] + grid_pos[1] // 2) * self.fieldSize[0]
+
     def pos_to_grid_pos(self, pos):
         y = pos[1] // self.fieldSize[1]
 

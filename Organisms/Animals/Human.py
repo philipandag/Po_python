@@ -36,15 +36,15 @@ class Human(Animal):
         if event.type == pygame.KEYDOWN:
             if event.key in (pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP):
                 self.direction.key_to_dir(event.key)
-            elif event.key == pygame.K_SPACE:
+            elif event.key == pygame.K_q:
                 self.special_ability()
 
 
     def special_ability(self):
         if self.ability_cooldown == 0:
-            print(self.get_name(), self.pos, "uses magic potion")
             self.ability_bonus_strength = self.ABILITY_BONUS
             self.ability_cooldown = self.ABILITY_COOLDOWN
+            print(self.get_name(), self.pos, "uses magic potion, strength=", self.get_strength())
         else:
             print(self.get_name(), self.pos, "cant use ability for", (self.ability_bonus_strength + self.ability_cooldown), "turns, strength=", self.get_strength())
 

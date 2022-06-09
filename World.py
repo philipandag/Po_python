@@ -4,16 +4,17 @@ from Console import Console
 from DirectionSquare import DirectionSquare
 from Organisms.Animals.Human import Human
 from Organisms.Organism import Organism
-from Board import Board
+from SquareBoard import SquareBoard
 from Organisms.Plants.PineBorscht import PineBorscht
 
 
 class World:
-    def __init__(self, game, dimensions):
+    def __init__(self, game, dimensions, board_type):
         self.organisms = []
         self.to_add = []
         self.chosenOrganism = Human
         self.console = None
+        self.board_type = board_type
         self.turn_counter = 0
         self.game = game
         self.organism_listeners = []
@@ -79,12 +80,13 @@ class World:
             self.organisms.remove(o)
         self.to_remove.clear()
 
-        print("Turn:", self.turn_counter, "Organisms: ", len(self.organisms))
+        print("\n\t### Turn:", self.turn_counter, "Organisms: ", len(self.organisms), "###")
         for organism in self.organisms:
             if organism.is_alive():
                 organism.action()
             else:
-                self.to_remove.append(organism)
+                if organism not in self.to_remove:
+                    self.to_remove.append(organism)
 
         for o in self.to_remove:
             self.organisms.remove(o)
@@ -106,3 +108,6 @@ class World:
 
     def get_direction(self):
         return self.get_board().get_direction()
+
+    def get_board_type(self):
+        return self.board_type

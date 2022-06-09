@@ -1,12 +1,7 @@
 import pygame
-import sys
-from Board import Board
-from HexBoard import HexBoard
-from InterfaceElement import InterfaceElement
 from Menu import Menu
 from World import World
 from OrganismChooser import OrganismChooser
-from Console import Console
 import pickle
 
 BLACK = (0, 0, 0)
@@ -38,8 +33,9 @@ class Game:
 
         self.boardPos = (PADDING, self.menuSize[1] + PADDING)
 
-        self.boardSize = (self.screen.get_width() - 2*PADDING, self.screen.get_height() - self.menuSize[1] - 2 * PADDING -
-                                       self.organismChooserSize[1])
+        self.boardSize = (
+            self.screen.get_width() - 2 * PADDING, self.screen.get_height() - self.menuSize[1] - 2 * PADDING -
+            self.organismChooserSize[1])
 
         self.menu = Menu(self.menuPos, self.menuSize, self)
         self.components.append(self.menu)
@@ -49,16 +45,29 @@ class Game:
         self.components.append(self.organismChooser)
 
         self.next_turn_key_pressed = False
+        self.next_turn_key_press_handled = True
+        self.next_turn_key_fast_mode = False
         self.screen.fill(WHITE)
 
     def quit(self):
         pygame.quit()
 
     def handle_event(self, event):
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-            self.next_turn_key_pressed = True
-        elif event.type == pygame.KEYUP and event.key == pygame.K_RETURN:
+        if event.type == pygame.KEYDOWN :
+            if event.key == pygame.K_SPACE:
+                self.next_turn_key_pressed = True
+                self.next_turn_key_press_handled = False
+            elif event.key == pygame.K_f:
+                if self.next_turn_key_fast_mode:
+                    self.next_turn_key_fast_mode = False
+                    print("fast mode OFF")
+                else:
+                    self.next_turn_key_fast_mode = True
+                    print("fast mode ON")
+
+        elif event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
             self.next_turn_key_pressed = False
+
 
         for listener in self.components:
             listener.handle_event(event)
@@ -68,7 +77,9 @@ class Game:
 
     def update(self):
         if self.next_turn_key_pressed:
-            self.world.next_turn()
+            if not self.next_turn_key_press_handled or self.next_turn_key_fast_mode:
+                self.world.next_turn()
+                self.next_turn_key_press_handled = True
         for comp in self.components:
             comp.update()
 
@@ -92,21 +103,23 @@ class Game:
                     self.handle_event(event)
 
             self.update()
-            # self.screen.fill(BLACK)
             self.draw(self.screen)
             pygame.display.update()
             self.clock.tick(25)
 
         self.quit()
 
-    def create_world(self, dimensions: (int, int)):
-        self.world = World(self, dimensions)
-        self.board = self.create_board()
+    def create_world(self, dimensions: (int, int), board_type):
+        self.world = World(self, dimensions, board_type)
+        if self.board is not None:
+            self.components.remove(self.board)
+        self.board = self.create_board(board_type)
         self.components.append(self.board)
         self.organismChooser.setWorld(self.world)
+        self.redraw()
 
-    def create_board(self):
-        return HexBoard(self.boardPos, self.boardSize, self.world)
+    def create_board(self, board_type):
+        return board_type(self.boardPos, self.boardSize, self.world)
 
     def get_world(self):
         return self.world
@@ -120,13 +133,19 @@ class Game:
             world = pickle.load(file)
         self.components.remove(self.board)
         self.world = world
-        self.board = self.create_board()
+        self.board = self.create_board(world.get_board_type())
         self.components.append(self.board)
         self.organismChooser.setWorld(self.world)
         self.world.game = self
         self.emplace_organisms()
-        self.board.redraw(self.screen)
+        self.update()
 
     def emplace_organisms(self):
         for organism in self.world.organisms:
             self.board.at(organism.pos).set_organism(organism)
+
+    def redraw(self):
+        self.screen.fill(WHITE)
+        for comp in self.components:
+            comp.redraw(self.screen)
+        self.draw(self.screen)

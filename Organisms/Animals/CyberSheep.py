@@ -13,6 +13,7 @@ class CyberSheep(Animal):
     INITIATIVE = 4
     def __init__(self):
         super(CyberSheep, self).__init__(CyberSheep.NAME, CyberSheep.SYMBOL, CyberSheep.COLOR, CyberSheep.STRENGTH, CyberSheep.INITIATIVE)
+        self.sees_pine_borscht = False
 
     def action(self):
         dir = self.search_for_pine()
@@ -34,12 +35,25 @@ class CyberSheep(Animal):
                         shortest_distance = distance
                         closest = (x, y)
         if closest is not None:
+            self.sees_pine_borscht = True
             self.color = self.ATTACK_COLOR
             delta = (closest[0] - self.pos[0], closest[1] - self.pos[1])
             dir = (sign(delta[0]), sign(delta[1]))
             return dir
-        self.color = self.COLOR
+        self.sees_pine_borscht = False
         return None
+
+    def get_colour(self):
+        if self.sees_pine_borscht:
+            return self.ATTACK_COLOR
+        else:
+            return self.COLOR
+
+    def get_symbol(self):
+        if self.sees_pine_borscht:
+            return self.SYMBOL
+        else:
+            return Sheep.SYMBOL
 
 
 

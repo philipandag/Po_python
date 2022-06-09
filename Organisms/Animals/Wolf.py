@@ -7,8 +7,6 @@ class Wolf(Animal):
     COLOR = (72, 82, 80)
     STRENGTH = 9
     INITIATIVE = 5
+
     def __init__(self):
         super(Wolf, self).__init__(Wolf.NAME, Wolf.SYMBOL, Wolf.COLOR, Wolf.STRENGTH, Wolf.INITIATIVE)
-
-    def action(self):
-        pass

@@ -12,4 +12,4 @@ class Guarana(Plant):
 
     def collision(self, attacker) -> bool:
         attacker.delta_strength(self.STRENGTH_BONUS)
-        super(Guarana, self).collision()
+        return super(Guarana, self).collision(attacker)

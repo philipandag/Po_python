@@ -19,7 +19,11 @@ class Antelope(Animal):
 
         for i in range(direction.directions()):
             delta = direction.delta()
-            pos = (self.pos[0] + delta[0]*2, self.pos[1] + delta[1]*2)
+
+            if random.random() < 0.5:
+                pos = (self.pos[0] + delta[0] * 2, self.pos[1] + delta[1] * 2)
+            else:
+                pos = (self.pos[0] + delta[0], self.pos[1] + delta[1])
             if self.get_board().onBoard(pos):
                 self.try_to_move_to(pos)
                 break
@@ -27,7 +31,7 @@ class Antelope(Animal):
         self.breed_cooldown_down()
 
     def collision(self, attacker) -> bool:
-        if random.random() < self.ESCAPE_CHANCE:
+        if not isinstance(attacker, Antelope) and random.random() < self.ESCAPE_CHANCE:
             direction = self.world.get_direction()()
             direction.randomise()
 

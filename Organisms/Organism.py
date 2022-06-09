@@ -1,4 +1,4 @@
-from Board import Board
+from SquareBoard import SquareBoard
 from Direction import Direction
 from Field import Field
 import random
@@ -95,7 +95,7 @@ class Organism(ABC):
                     print(attacker.get_name(), attacker.get_pos(), "is not able to breed")
             return False
         else:
-            print(attacker.get_name(), attacker.get_pos(), "attacks", self.get_name(), self.get_pos())
+            print(attacker.get_name(), attacker.get_pos(), "strength", attacker.get_strength(), "attacks", self.get_name(), self.get_pos(), "strength", self.get_strength())
             if self.get_strength() < attacker.get_strength():
                 self.kill()
                 return True

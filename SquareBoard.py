@@ -7,12 +7,12 @@ from GridContainer import GridContainer
 from InterfaceElement import InterfaceElement
 from Button import Button
 
-class Board(GridContainer):
+class SquareBoard(GridContainer):
 
     def __init__(self, pos: (int, int), size: (int, int), world):
         m = min(size[0]//world.dimensions[0], size[1]//world.dimensions[1])
         size = (m*world.dimensions[0], m*world.dimensions[1])
-        super(Board, self).__init__(pos, size, world.dimensions)
+        super(SquareBoard, self).__init__(pos, size, world.dimensions)
         self.world = world
         self.dimensions = world.dimensions
         self.createGrid()

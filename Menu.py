@@ -2,9 +2,11 @@ import pygame
 from Button import Button
 from GridContainer import GridContainer
 from NextTurnButton import NextTurnButton
+from WorldCreator import WorldCreator
+
 
 class Menu(GridContainer):
-    buttons_amount = 3
+    buttons_amount = 4
     def __init__(self, pos: (int, int), size: (int, int), window):
         super(Menu, self).__init__(pos, size, (self.buttons_amount, 1))
         self.window = window
@@ -18,3 +20,6 @@ class Menu(GridContainer):
             (lambda: self.window.save_world())))
         self.grid[0].append(Button(self.fieldSize, (self.fieldSize[0] * 2, 0), "Load").setOnClick(
             (lambda: self.window.load_world())))
+        self.grid[0].append(Button(self.fieldSize, (self.fieldSize[0] * 3, 0), "New Game").setOnClick(
+            (lambda: WorldCreator(self.window))))
+

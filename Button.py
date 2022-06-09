@@ -45,7 +45,6 @@ class Button(InterfaceElement):
         self.hovered = True
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
 
-
     def onMouseLeave(self):
         self.needs_redraw = True
         self.hovered = False
@@ -134,4 +133,8 @@ class Button(InterfaceElement):
         image_hover.fill(self.hover_effect, special_flags=pygame.BLEND_RGB_ADD)
 
         return image_normal, image_hover
+
+    def redraw(self, surface):
+        self.needs_redraw = True
+        self.draw(surface)
 
